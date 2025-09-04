@@ -1,0 +1,84 @@
+version: '3.8'
+
+services:
+  # MongoDB for ESG reports and user data
+  mongodb:
+    image: mongo:7.0
+    container_name: ecoinsight_mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: ecoinsight2024
+      MONGO_INITDB_DATABASE: ecoinsight
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+      - ./mongo-init:/docker-entrypoint-initdb.d
+    networks:
+      - ecoinsight_network
+
+  # TimescaleDB for time-series data
+  timescaledb:
+    image: timescale/timescaledb:latest-pg16
+    container_name: ecoinsight_timescaledb
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ecoinsight_timeseries
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: ecoinsight2024
+    ports:
+      - "5432:5432"
+    volumes:
+      - timescaledb_data:/var/lib/postgresql/data
+    networks:
+      - ecoinsight_network
+
+  # Redis for caching and session management
+  redis:
+    image: redis:7.2-alpine
+    container_name: ecoinsight_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - ecoinsight_network
+
+  # Backend API service
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: ecoinsight_backend
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    environment:
+      NODE_ENV: development
+      PORT: 3001
+      MONGODB_URI: mongodb://admin:ecoinsight2024@mongodb:27017/ecoinsight?authSource=admin
+      TIMESCALEDB_URI: postgresql://admin:ecoinsight2024@timescaledb:5432/ecoinsight_timeseries
+      REDIS_URI: redis://redis:6379
+      JWT_SECRET: ecoinsight_jwt_secret_2024
+      API_RATE_LIMIT_WINDOW: 900000
+      API_RATE_LIMIT_MAX: 100
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    depends_on:
+      - mongodb
+      - timescaledb
+      - redis
+    networks:
+      - ecoinsight_network
+
+volumes:
+  mongodb_data:
+  timescaledb_data:
+  redis_data:
+
+networks:
+  ecoinsight_network:
+    driver: bridge
