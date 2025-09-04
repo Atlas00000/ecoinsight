@@ -4,6 +4,7 @@ const ClimateData = require('../models/ClimateData');
 const cache = require('../utils/cache');
 const { validate, commonValidations } = require('../middleware/validation');
 const logger = require('../utils/logger');
+const { authenticateJWT } = require('../middleware/auth');
 
 // Get climate data with pagination and caching
 router.get('/', commonValidations.pagination, async (req, res) => {
@@ -90,13 +91,13 @@ router.get('/:id', commonValidations.objectId, async (req, res) => {
 });
 
 // Create new climate data
-router.post('/', async (req, res) => {
+router.post('/', authenticateJWT, async (req, res) => {
   try {
     const climateData = new ClimateData(req.body);
     await climateData.save();
 
     // Clear related cache
-    await cache.delete('climate:*');
+    await cache.deleteByPattern('climate:*');
 
     logger.info('New climate data created:', climateData._id);
     res.status(201).json({
@@ -113,7 +114,7 @@ router.post('/', async (req, res) => {
 });
 
 // Update climate data
-router.put('/:id', commonValidations.objectId, async (req, res) => {
+router.put('/:id', commonValidations.objectId, authenticateJWT, async (req, res) => {
   try {
     const data = await ClimateData.findByIdAndUpdate(
       req.params.id,
@@ -129,7 +130,7 @@ router.put('/:id', commonValidations.objectId, async (req, res) => {
     }
 
     // Clear related cache
-    await cache.delete('climate:*');
+    await cache.deleteByPattern('climate:*');
 
     logger.info('Climate data updated:', data._id);
     res.json({
@@ -146,7 +147,7 @@ router.put('/:id', commonValidations.objectId, async (req, res) => {
 });
 
 // Delete climate data
-router.delete('/:id', commonValidations.objectId, async (req, res) => {
+router.delete('/:id', commonValidations.objectId, authenticateJWT, async (req, res) => {
   try {
     const data = await ClimateData.findByIdAndDelete(req.params.id);
 
@@ -158,7 +159,7 @@ router.delete('/:id', commonValidations.objectId, async (req, res) => {
     }
 
     // Clear related cache
-    await cache.delete('climate:*');
+    await cache.deleteByPattern('climate:*');
 
     logger.info('Climate data deleted:', req.params.id);
     res.json({

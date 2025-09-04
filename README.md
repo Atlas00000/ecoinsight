@@ -136,16 +136,18 @@ docker exec -it ecoinsight_redis redis-cli
 ```
 climatedash/
 ├── docker-compose.yml          # Docker services configuration
+├── docker-compose.prod.yml     # Production services configuration
 ├── backend/                    # Backend API service
 │   ├── Dockerfile             # Backend container
 │   ├── package.json           # Dependencies
+│   ├── .env.example           # Dev environment variables template
+│   ├── .env.production.example# Prod environment variables template
 │   ├── src/                   # Source code
 │   │   ├── config/            # Database and Redis config
 │   │   ├── middleware/        # Express middleware
 │   │   ├── routes/            # API routes
 │   │   ├── utils/             # Utilities (logger, etc.)
 │   │   └── server.js          # Main server file
-│   ├── .env.example           # Environment variables template
 │   └── healthcheck.js         # Docker health check
 ├── mongo-init/                 # MongoDB initialization scripts
 └── README.md                   # This file
@@ -176,36 +178,40 @@ climatedash/
 - **Error Tracking** - Centralized error handling
 - **API Documentation** - Swagger/OpenAPI docs
 
-## 🚀 Deployment
+## 🚀 Deployment (Production)
 
-### Production Environment
+### 1) Prepare environment
 ```bash
-# Set production environment
-export NODE_ENV=production
-
-# Update environment variables
-# - Use strong JWT secrets
-# - Configure production database URLs
-# - Set up SSL certificates
-# - Configure CDN
-
-# Start production services
-docker-compose -f docker-compose.prod.yml up -d
+# Copy production env template and edit values
+cp backend/.env.production.example backend/.env.production
+# Set strong JWT secret, DB users/passwords, allowed origins, API keys
 ```
 
-### Environment Variables
-- `NODE_ENV` - Environment (development/production)
-- `PORT` - Server port
-- `JWT_SECRET` - JWT signing secret
-- `API_RATE_LIMIT_*` - Rate limiting configuration
-- `*_API_KEY` - External API keys
+### 2) Start production stack
+```bash
+# From project root
+docker compose -f docker-compose.prod.yml up -d --build
+```
+
+### 3) Verify
+```bash
+curl http://localhost:3001/health
+curl http://localhost:3001/api/v1
+curl http://localhost:3001/api/v1/docs
+```
+
+### 4) Logs & lifecycle
+```bash
+docker compose -f docker-compose.prod.yml logs -f backend
+docker compose -f docker-compose.prod.yml down
+```
 
 ## 📚 API Documentation
 
 Once the server is running, visit:
 - **API Info**: http://localhost:3001/api/v1
 - **Health Check**: http://localhost:3001/health
-- **Swagger Docs**: http://localhost:3001/api/v1/docs (coming soon)
+- **Swagger Docs**: http://localhost:3001/api/v1/docs
 
 ## 🧪 Testing
 

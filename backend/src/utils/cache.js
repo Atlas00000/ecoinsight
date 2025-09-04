@@ -39,6 +39,28 @@ class Cache {
     }
   }
 
+  // Delete multiple keys by pattern using SCAN iterator (node-redis v4)
+  async deleteByPattern(pattern) {
+    try {
+      const client = getRedisClient();
+      const keysToDelete = [];
+      for await (const key of client.scanIterator({ MATCH: pattern, COUNT: 250 })) {
+        keysToDelete.push(key);
+        if (keysToDelete.length >= 1000) {
+          await client.del(keysToDelete);
+          keysToDelete.length = 0;
+        }
+      }
+      if (keysToDelete.length > 0) {
+        await client.del(keysToDelete);
+      }
+      return true;
+    } catch (error) {
+      logger.error('Cache deleteByPattern error:', error);
+      return false;
+    }
+  }
+
   async exists(key) {
     try {
       const client = getRedisClient();

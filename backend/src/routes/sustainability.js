@@ -4,6 +4,7 @@ const ESGReport = require('../models/ESGReport');
 const cache = require('../utils/cache');
 const { validate, commonValidations } = require('../middleware/validation');
 const logger = require('../utils/logger');
+const { authenticateJWT } = require('../middleware/auth');
 
 // Get ESG reports with pagination and caching
 router.get('/esg', commonValidations.pagination, async (req, res) => {
@@ -86,13 +87,13 @@ router.get('/esg/:id', commonValidations.objectId, async (req, res) => {
 });
 
 // Create new ESG report
-router.post('/esg', async (req, res) => {
+router.post('/esg', authenticateJWT, async (req, res) => {
   try {
     const esgReport = new ESGReport(req.body);
     await esgReport.save();
 
     // Clear related cache
-    await cache.delete('esg:*');
+    await cache.deleteByPattern('esg:*');
 
     logger.info('New ESG report created:', esgReport._id);
     res.status(201).json({
@@ -109,7 +110,7 @@ router.post('/esg', async (req, res) => {
 });
 
 // Update ESG report
-router.put('/esg/:id', commonValidations.objectId, async (req, res) => {
+router.put('/esg/:id', commonValidations.objectId, authenticateJWT, async (req, res) => {
   try {
     const data = await ESGReport.findByIdAndUpdate(
       req.params.id,
@@ -125,7 +126,7 @@ router.put('/esg/:id', commonValidations.objectId, async (req, res) => {
     }
 
     // Clear related cache
-    await cache.delete('esg:*');
+    await cache.deleteByPattern('esg:*');
 
     logger.info('ESG report updated:', data._id);
     res.json({
@@ -142,7 +143,7 @@ router.put('/esg/:id', commonValidations.objectId, async (req, res) => {
 });
 
 // Delete ESG report
-router.delete('/esg/:id', commonValidations.objectId, async (req, res) => {
+router.delete('/esg/:id', commonValidations.objectId, authenticateJWT, async (req, res) => {
   try {
     const data = await ESGReport.findByIdAndDelete(req.params.id);
 
@@ -154,7 +155,7 @@ router.delete('/esg/:id', commonValidations.objectId, async (req, res) => {
     }
 
     // Clear related cache
-    await cache.delete('esg:*');
+    await cache.deleteByPattern('esg:*');
 
     logger.info('ESG report deleted:', req.params.id);
     res.json({

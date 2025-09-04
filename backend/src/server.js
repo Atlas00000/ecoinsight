@@ -6,6 +6,8 @@ const rateLimit = require('express-rate-limit');
 require('dotenv').config();
 
 const logger = require('./utils/logger');
+const swaggerUi = require('swagger-ui-express');
+const swaggerJSDoc = require('swagger-jsdoc');
 const { connectDB } = require('./config/database');
 const { connectRedis } = require('./config/redis');
 const errorHandler = require('./middleware/errorHandler');
@@ -70,6 +72,138 @@ app.use('/health', healthCheck);
 // API routes
 app.use('/api/v1', require('./routes'));
 
+// Swagger/OpenAPI setup (minimal inline spec)
+const swaggerOptions = {
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'EcoInsight API',
+      version: '1.0.0',
+      description: 'API documentation for EcoInsight Backend',
+    },
+    servers: [
+      { url: '/api/v1', description: 'Base Path' },
+    ],
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+        },
+      },
+      schemas: {
+        AuthRegisterRequest: {
+          type: 'object',
+          required: ['username', 'email', 'password'],
+          properties: {
+            username: { type: 'string' },
+            email: { type: 'string', format: 'email' },
+            password: { type: 'string', minLength: 6 },
+          },
+        },
+        AuthLoginRequest: {
+          type: 'object',
+          required: ['email', 'password'],
+          properties: {
+            email: { type: 'string', format: 'email' },
+            password: { type: 'string' },
+          },
+        },
+        ClimateData: {
+          type: 'object',
+          required: ['location', 'dataType', 'timestamp', 'value', 'unit', 'source'],
+          properties: {
+            location: { type: 'string' },
+            dataType: { type: 'string', enum: ['weather', 'air_quality', 'emissions', 'temperature'] },
+            timestamp: { type: 'string', format: 'date-time' },
+            value: {},
+            unit: { type: 'string' },
+            source: { type: 'string' },
+            metadata: { type: 'object' },
+          },
+        },
+        ESGReport: {
+          type: 'object',
+          required: ['company', 'year', 'reportType', 'source'],
+          properties: {
+            company: { type: 'string' },
+            year: { type: 'integer' },
+            reportType: { type: 'string', enum: ['annual', 'quarterly', 'sustainability', 'esg'] },
+            metrics: { type: 'object' },
+            score: { type: 'number' },
+            source: { type: 'string' },
+            verified: { type: 'boolean' },
+          },
+        },
+        TimeseriesPoint: {
+          type: 'object',
+          required: ['location', 'dataType', 'timestamp', 'value', 'unit', 'source'],
+          properties: {
+            location: { type: 'string' },
+            dataType: { type: 'string' },
+            timestamp: { type: 'string', format: 'date-time' },
+            value: { type: 'number' },
+            unit: { type: 'string' },
+            source: { type: 'string' },
+            metadata: { type: 'object' },
+          },
+        },
+      },
+    },
+    paths: {
+      '/auth/register': {
+        post: {
+          summary: 'Register user',
+          requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/AuthRegisterRequest' } } } },
+          responses: { '201': { description: 'Created' } },
+        },
+      },
+      '/auth/login': {
+        post: {
+          summary: 'Login',
+          requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/AuthLoginRequest' } } } },
+          responses: { '200': { description: 'OK' } },
+        },
+      },
+      '/climate': {
+        get: { summary: 'List climate data', responses: { '200': { description: 'OK' } } },
+        post: {
+          summary: 'Create climate data',
+          security: [{ bearerAuth: [] }],
+          requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/ClimateData' } } } },
+          responses: { '201': { description: 'Created' }, '401': { description: 'Unauthorized' } },
+        },
+      },
+      '/climate/{id}': {
+        get: { summary: 'Get climate by id', parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }], responses: { '200': { description: 'OK' }, '404': { description: 'Not Found' } } },
+        put: { summary: 'Update climate', security: [{ bearerAuth: [] }], parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }], responses: { '200': { description: 'OK' }, '401': { description: 'Unauthorized' } } },
+        delete: { summary: 'Delete climate', security: [{ bearerAuth: [] }], parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }], responses: { '200': { description: 'OK' }, '401': { description: 'Unauthorized' } } },
+      },
+      '/sustainability/esg': {
+        get: { summary: 'List ESG reports', responses: { '200': { description: 'OK' } } },
+        post: { summary: 'Create ESG report', security: [{ bearerAuth: [] }], requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/ESGReport' } } } }, responses: { '201': { description: 'Created' }, '401': { description: 'Unauthorized' } } },
+      },
+      '/sustainability/esg/{id}': {
+        get: { summary: 'Get ESG by id', parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }], responses: { '200': { description: 'OK' }, '404': { description: 'Not Found' } } },
+        put: { summary: 'Update ESG', security: [{ bearerAuth: [] }], parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }], responses: { '200': { description: 'OK' } } },
+        delete: { summary: 'Delete ESG', security: [{ bearerAuth: [] }], parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }], responses: { '200': { description: 'OK' } } },
+      },
+      '/timeseries': {
+        get: { summary: 'Query aggregated timeseries', responses: { '200': { description: 'OK' } } },
+        post: { summary: 'Insert timeseries point', security: [{ bearerAuth: [] }], requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/TimeseriesPoint' } } } }, responses: { '201': { description: 'Created' } } },
+      },
+      '/health': {
+        get: { summary: 'Overall system health', responses: { '200': { description: 'OK' }, '503': { description: 'Service Unavailable' } } },
+      },
+    },
+  },
+  apis: [],
+};
+const swaggerSpec = swaggerJSDoc(swaggerOptions);
+app.use('/api/v1/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.get('/api/v1/docs.json', (req, res) => res.json(swaggerSpec));
+
 // Root endpoint
 app.get('/', (req, res) => {
   res.json({
@@ -114,13 +248,20 @@ async function startServer() {
 }
 
 // Graceful shutdown
-process.on('SIGTERM', () => {
+const { closeConnections } = require('./config/database');
+const { closeRedis } = require('./config/redis');
+
+process.on('SIGTERM', async () => {
   logger.info('SIGTERM received, shutting down gracefully');
+  try { await closeConnections(); } catch {}
+  try { await closeRedis(); } catch {}
   process.exit(0);
 });
 
-process.on('SIGINT', () => {
+process.on('SIGINT', async () => {
   logger.info('SIGINT received, shutting down gracefully');
+  try { await closeConnections(); } catch {}
+  try { await closeRedis(); } catch {}
   process.exit(0);
 });
 

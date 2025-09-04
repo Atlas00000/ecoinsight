@@ -267,3 +267,23 @@ A comprehensive climate and sustainability dashboard built with MERN stack + Tim
 3. Begin Docker infrastructure setup
 4. Implement security foundation
 5. Build modular backend architecture
+
+## Weekly Implementation Plan (Backend-first)
+
+The implementation will prioritize completing the backend before starting the frontend work.
+
+| Week | Focus                                  | Key Deliverables                                                                 | Status |
+|------|----------------------------------------|-----------------------------------------------------------------------------------|--------|
+| 1    | Foundation & Infra                     | Docker Compose (Mongo, TimescaleDB, Redis, Backend), Helmet, CORS, Rate Limit, /health | ✅ Done |
+| 2    | Core Backend Architecture              | API gateway `/api/v1`, models (`ClimateData`, `ESGReport`, `User`), CRUD, logging, error handler, validation | ✅ Done |
+| 3    | Data Layer Enablement                  | MongoDB usage, Redis caching on list endpoints, compression, DB pooling; plan TimescaleDB schema | ⏳ In Progress |
+| 4    | Climate Integrations (Round 1)         | OpenWeather live fetch + persist, OpenAQ live fetch + persist, caching, input checks | ⏳ In Progress |
+| 5    | Backend Hardening & Docs               | Swagger/OpenAPI at `/api/v1/docs`, auth (register/login/JWT guard), cache invalidation fix, graceful shutdown, tests (health/CRUD) | ⏳ Planned |
+| 6    | TimescaleDB Utilization                | Write/read high-frequency time-series to TimescaleDB, rollups, windowed queries    | ⏳ Planned |
+| 7    | Frontend Foundation                    | Next.js setup, routing, API client, basic layout                                   | ⏳ Planned |
+| 8    | Visualization & Integration + Release  | D3 time-series charts, full-stack integration, E2E tests, performance tuning, deployment | ⏳ Planned |
+
+Notes:
+- Backend work (Weeks 1–6) completes before frontend (Weeks 7–8).
+- Security improvements: move secrets to env/secrets, tighten CORS, add route-level rate limits where needed.
+- Testing: expand Supertest/Jest coverage across CRUD and integrations; mock external APIs.

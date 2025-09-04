@@ -1,0 +1,21 @@
+# Node
+backend/node_modules/
+backend/npm-debug.log*
+
+# Logs
+backend/logs/
+
+# Env files
+backend/.env
+backend/.env.*
+!backend/.env.example
+!backend/.env.production.example
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Coverage
+backend/coverage/
+
+

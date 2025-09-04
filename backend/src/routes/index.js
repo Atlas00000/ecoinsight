@@ -7,9 +7,14 @@ const climateRoutes = require('./climate');
 const sustainabilityRoutes = require('./sustainability');
 const seedRoutes = require('./seed');
 const climateExternalRoutes = require('./climate_external');
+const authRoutes = require('./auth');
+const timeseriesRoutes = require('./timeseries');
 
 // Health check routes
 router.use('/health', healthRoutes);
+
+// Auth routes
+router.use('/auth', authRoutes);
 
 // Climate data routes
 router.use('/climate', climateRoutes);
@@ -17,6 +22,9 @@ router.use('/climate', climateExternalRoutes);
 
 // Sustainability routes
 router.use('/sustainability', sustainabilityRoutes);
+
+// Timeseries routes
+router.use('/timeseries', timeseriesRoutes);
 
 // Seed routes (development only)
 router.use('/seed', seedRoutes);
@@ -51,6 +59,13 @@ router.get('/docs', (req, res) => {
         routes: {
           'GET /sustainability/esg': 'ESG reports and metrics',
           'GET /sustainability/metrics': 'Aggregated sustainability metrics',
+        },
+      },
+      timeseries: {
+        description: 'TimescaleDB-backed time-series',
+        routes: {
+          'POST /timeseries': 'Insert time-series point (auth required)',
+          'GET /timeseries': 'Query aggregated time-series',
         },
       },
     },

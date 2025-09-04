@@ -48,10 +48,45 @@ const connectTimescaleDB = async () => {
       ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
     });
 
-    // Test connection
+    // Test connection and ensure hypertable exists
     const client = await timescalePool.connect();
-    await client.query('SELECT NOW()');
-    client.release();
+    try {
+      await client.query('SELECT NOW()');
+      // Ensure clean schema in development: drop conflicting table if it exists
+      await client.query(`
+        DO $$
+        BEGIN
+          IF to_regclass('public.climate_timeseries') IS NOT NULL THEN
+            -- Drop the table to avoid primary key constraints blocking hypertable creation (dev-fast path)
+            DROP TABLE public.climate_timeseries CASCADE;
+          END IF;
+        END$$;
+      `);
+      // Create table
+      await client.query(`
+        CREATE TABLE IF NOT EXISTS climate_timeseries (
+          id BIGSERIAL,
+          location TEXT NOT NULL,
+          data_type TEXT NOT NULL,
+          ts TIMESTAMPTZ NOT NULL,
+          value DOUBLE PRECISION NOT NULL,
+          unit TEXT NOT NULL,
+          source TEXT NOT NULL,
+          metadata JSONB DEFAULT '{}'::jsonb
+        );
+      `);
+      // Create hypertable if not already
+      await client.query(`
+        SELECT create_hypertable('climate_timeseries', 'ts', if_not_exists => TRUE);
+      `);
+      // Helpful index
+      await client.query(`
+        CREATE INDEX IF NOT EXISTS idx_climate_timeseries_loc_type_ts
+        ON climate_timeseries (location, data_type, ts DESC);
+      `);
+    } finally {
+      client.release();
+    }
 
     logger.info('✅ TimescaleDB connected successfully');
 
