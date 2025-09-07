@@ -27,13 +27,20 @@
 
 ## 🧭 Architecture
 
-```mermaid
-graph LR
-  A[Clients / Integrations] --> B{EcoInsight API<br/>(Express.js)}
-  B --> C[MongoDB<br/>(ESG, Documents)]
-  B --> D[TimescaleDB<br/>(Time-Series)]
-  B --> E[Redis<br/>(Cache)]
-  B --> F[External Providers<br/>(OpenWeather, OpenAQ)]
+```
+Clients / Integrations
+        |
+        v
+  EcoInsight API (Express)
+        |
+  +-----+------+-----------------------+
+  |            |                       |
+  v            v                       v
+MongoDB   TimescaleDB               Redis
+(ESG)     (Time‑Series)             (Cache)
+        |
+        v
+External Providers (OpenWeather, OpenAQ)
 ```
 
 ## 🚀 Quick Start (Docker)
