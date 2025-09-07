@@ -53,15 +53,17 @@ const connectTimescaleDB = async () => {
     try {
       await client.query('SELECT NOW()');
       // Ensure clean schema in development: drop conflicting table if it exists
-      await client.query(`
-        DO $$
-        BEGIN
-          IF to_regclass('public.climate_timeseries') IS NOT NULL THEN
-            -- Drop the table to avoid primary key constraints blocking hypertable creation (dev-fast path)
-            DROP TABLE public.climate_timeseries CASCADE;
-          END IF;
-        END$$;
-      `);
+      // Development-only: avoid destructive drops in non-development environments
+      if ((process.env.NODE_ENV || 'development') === 'development') {
+        await client.query(`
+          DO $$
+          BEGIN
+            IF to_regclass('public.climate_timeseries') IS NOT NULL THEN
+              DROP TABLE public.climate_timeseries CASCADE;
+            END IF;
+          END$$;
+        `);
+      }
       // Create table
       await client.query(`
         CREATE TABLE IF NOT EXISTS climate_timeseries (

@@ -59,6 +59,8 @@ router.get('/', async (req, res) => {
       status: overallHealth,
       timestamp: new Date().toISOString(),
       responseTime: `${responseTime}ms`,
+      service: 'ecoinsight-backend',
+      version: '1.0.0',
       services: {
         mongodb: mongoHealth,
         timescaledb: timescaleHealth,

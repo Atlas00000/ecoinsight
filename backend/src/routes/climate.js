@@ -91,7 +91,7 @@ router.get('/:id', commonValidations.objectId, async (req, res) => {
 });
 
 // Create new climate data
-router.post('/', authenticateJWT, async (req, res) => {
+router.post('/', authenticateJWT, commonValidations.climateCreate, validate, async (req, res) => {
   try {
     const climateData = new ClimateData(req.body);
     await climateData.save();
@@ -114,7 +114,7 @@ router.post('/', authenticateJWT, async (req, res) => {
 });
 
 // Update climate data
-router.put('/:id', commonValidations.objectId, authenticateJWT, async (req, res) => {
+router.put('/:id', commonValidations.objectId, authenticateJWT, commonValidations.climateUpdate, validate, async (req, res) => {
   try {
     const data = await ClimateData.findByIdAndUpdate(
       req.params.id,

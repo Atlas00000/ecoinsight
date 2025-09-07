@@ -1,5 +1,7 @@
 const request = require('supertest');
 
+jest.setTimeout(20000);
+
 // Target the running server (Docker maps 3001)
 const api = request('http://localhost:3001');
 

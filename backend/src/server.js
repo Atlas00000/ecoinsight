@@ -29,8 +29,12 @@ app.use(helmet({
 }));
 
 // CORS configuration
+const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000'];
+if ((process.env.NODE_ENV === 'production') && (!process.env.ALLOWED_ORIGINS || allowedOrigins.length === 0)) {
+  logger.warn('CORS: ALLOWED_ORIGINS is not set in production; defaulting to localhost. Configure ALLOWED_ORIGINS.');
+}
 app.use(cors({
-  origin: process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000'],
+  origin: allowedOrigins,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key'],
@@ -58,7 +62,9 @@ app.use(compression());
 
 // Request logging
 app.use((req, res, next) => {
-  logger.info(`${req.method} ${req.path}`, {
+  const isHealth = req.path === '/health' || req.path.startsWith('/api/v1/health');
+  const logMethod = (process.env.NODE_ENV === 'production' && isHealth) ? 'debug' : 'info';
+  logger[logMethod](`${req.method} ${req.path}`, {
     ip: req.ip,
     userAgent: req.get('User-Agent'),
     timestamp: new Date().toISOString(),
@@ -93,6 +99,19 @@ const swaggerOptions = {
         },
       },
       schemas: {
+        ErrorResponse: {
+          type: 'object',
+          properties: {
+            success: { type: 'boolean', example: false },
+            error: {
+              type: 'object',
+              properties: {
+                message: { type: 'string' },
+                details: { type: 'object' },
+              },
+            },
+          },
+        },
         AuthRegisterRequest: {
           type: 'object',
           required: ['username', 'email', 'password'],
@@ -167,7 +186,18 @@ const swaggerOptions = {
         },
       },
       '/climate': {
-        get: { summary: 'List climate data', responses: { '200': { description: 'OK' } } },
+        get: { 
+          summary: 'List climate data',
+          parameters: [
+            { name: 'page', in: 'query', schema: { type: 'integer', default: 1 } },
+            { name: 'limit', in: 'query', schema: { type: 'integer', default: 10 } },
+            { name: 'location', in: 'query', schema: { type: 'string' } },
+            { name: 'dataType', in: 'query', schema: { type: 'string', enum: ['weather','air_quality','emissions','temperature'] } },
+            { name: 'startDate', in: 'query', schema: { type: 'string', format: 'date-time' } },
+            { name: 'endDate', in: 'query', schema: { type: 'string', format: 'date-time' } },
+          ],
+          responses: { '200': { description: 'OK' }, '400': { description: 'Bad Request', content: { 'application/json': { schema: { $ref: '#/components/schemas/ErrorResponse' } } } } }
+        },
         post: {
           summary: 'Create climate data',
           security: [{ bearerAuth: [] }],
@@ -181,7 +211,17 @@ const swaggerOptions = {
         delete: { summary: 'Delete climate', security: [{ bearerAuth: [] }], parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }], responses: { '200': { description: 'OK' }, '401': { description: 'Unauthorized' } } },
       },
       '/sustainability/esg': {
-        get: { summary: 'List ESG reports', responses: { '200': { description: 'OK' } } },
+        get: { 
+          summary: 'List ESG reports',
+          parameters: [
+            { name: 'page', in: 'query', schema: { type: 'integer', default: 1 } },
+            { name: 'limit', in: 'query', schema: { type: 'integer', default: 10 } },
+            { name: 'company', in: 'query', schema: { type: 'string' } },
+            { name: 'year', in: 'query', schema: { type: 'integer' } },
+            { name: 'reportType', in: 'query', schema: { type: 'string', enum: ['annual','quarterly','sustainability','esg'] } },
+          ],
+          responses: { '200': { description: 'OK' }, '400': { description: 'Bad Request', content: { 'application/json': { schema: { $ref: '#/components/schemas/ErrorResponse' } } } } }
+        },
         post: { summary: 'Create ESG report', security: [{ bearerAuth: [] }], requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/ESGReport' } } } }, responses: { '201': { description: 'Created' }, '401': { description: 'Unauthorized' } } },
       },
       '/sustainability/esg/{id}': {
@@ -190,7 +230,17 @@ const swaggerOptions = {
         delete: { summary: 'Delete ESG', security: [{ bearerAuth: [] }], parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }], responses: { '200': { description: 'OK' } } },
       },
       '/timeseries': {
-        get: { summary: 'Query aggregated timeseries', responses: { '200': { description: 'OK' } } },
+        get: { 
+          summary: 'Query aggregated timeseries',
+          parameters: [
+            { name: 'location', in: 'query', required: true, schema: { type: 'string' } },
+            { name: 'dataType', in: 'query', required: true, schema: { type: 'string' } },
+            { name: 'start', in: 'query', schema: { type: 'string', format: 'date-time' } },
+            { name: 'end', in: 'query', schema: { type: 'string', format: 'date-time' } },
+            { name: 'bucket', in: 'query', schema: { type: 'string', example: '1 hour' } },
+          ],
+          responses: { '200': { description: 'OK' }, '400': { description: 'Bad Request', content: { 'application/json': { schema: { $ref: '#/components/schemas/ErrorResponse' } } } } }
+        },
         post: { summary: 'Insert timeseries point', security: [{ bearerAuth: [] }], requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/TimeseriesPoint' } } } }, responses: { '201': { description: 'Created' } } },
       },
       '/health': {

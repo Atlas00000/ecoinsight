@@ -1,16 +1,31 @@
 const express = require('express');
 const router = express.Router();
+const rateLimit = require('express-rate-limit');
 const cache = require('../utils/cache');
 const ClimateData = require('../models/ClimateData');
 const logger = require('../utils/logger');
 const { fetchCurrentWeatherByCity } = require('../services/openweather');
 const { fetchAirQualityByCity } = require('../services/openaq');
 
+// Per-route rate limits for upstream API protection
+const liveLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, error: { message: 'Too many requests to live endpoint, please try again shortly' } },
+});
+
 // GET /api/v1/climate/weather/live?city=London
-router.get('/weather/live', async (req, res) => {
+router.get('/weather/live', liveLimiter, async (req, res) => {
   try {
     const city = req.query.city;
     if (!city) return res.status(400).json({ success: false, error: { message: 'city is required' } });
+
+    // Return clear message if API key is not configured
+    if (!process.env.OPENWEATHER_API_KEY) {
+      return res.status(503).json({ success: false, error: { message: 'Weather service not configured (missing OPENWEATHER_API_KEY)' } });
+    }
 
     const cacheKey = cache.generateKey('weather_live', { city });
     const cached = await cache.get(cacheKey);
@@ -39,12 +54,14 @@ router.get('/weather/live', async (req, res) => {
     res.json({ success: true, source: 'live', data: payload });
   } catch (error) {
     logger.error('weather/live error', error);
-    res.status(500).json({ success: false, error: { message: 'Failed to fetch weather' } });
+    const status = error?.response?.status;
+    const mapped = status && status >= 400 && status < 500 ? 503 : 500;
+    res.status(mapped).json({ success: false, error: { message: 'Failed to fetch weather', ...(status ? { upstreamStatus: status } : {}) } });
   }
 });
 
 // GET /api/v1/climate/air-quality/live?city=London
-router.get('/air-quality/live', async (req, res) => {
+router.get('/air-quality/live', liveLimiter, async (req, res) => {
   try {
     const city = req.query.city;
     if (!city) return res.status(400).json({ success: false, error: { message: 'city is required' } });
@@ -73,7 +90,9 @@ router.get('/air-quality/live', async (req, res) => {
     res.json({ success: true, source: 'live', data: payload });
   } catch (error) {
     logger.error('air-quality/live error', error);
-    res.status(500).json({ success: false, error: { message: 'Failed to fetch air quality' } });
+    const status = error?.response?.status;
+    const mapped = status && status >= 400 && status < 500 ? 503 : 500;
+    res.status(mapped).json({ success: false, error: { message: 'Failed to fetch air quality', ...(status ? { upstreamStatus: status } : {}) } });
   }
 });
 

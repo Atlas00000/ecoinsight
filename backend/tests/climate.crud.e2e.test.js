@@ -2,6 +2,8 @@ const request = require('supertest');
 
 const api = request('http://localhost:3001');
 
+jest.setTimeout(20000);
+
 describe('Climate CRUD E2E', () => {
   let token;
   let createdId;

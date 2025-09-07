@@ -2,6 +2,8 @@ const request = require('supertest');
 
 const api = request('http://localhost:3001');
 
+jest.setTimeout(20000);
+
 describe('Timeseries endpoints', () => {
   let token;
   const email = `ts_${Date.now()}@example.com`;
@@ -29,13 +31,13 @@ describe('Timeseries endpoints', () => {
       .set('Authorization', `Bearer ${token}`)
       .set('Content-Type', 'application/json')
       .send({ location: 'TS', dataType: 'weather', timestamp: new Date().toISOString(), value: 2.5, unit: 'celsius', source: 'test' });
-    expect([201, 500]).toContain(res.statusCode);
+    expect(res.statusCode).toBe(201);
   });
 
   it('query timeseries returns 200', async () => {
     const res = await api.get('/api/v1/timeseries')
       .query({ location: 'TS', dataType: 'weather', bucket: '1 hour' });
-    expect([200, 500]).toContain(res.statusCode);
+    expect(res.statusCode).toBe(200);
   });
 });
 

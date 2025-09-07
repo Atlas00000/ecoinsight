@@ -87,7 +87,7 @@ router.get('/esg/:id', commonValidations.objectId, async (req, res) => {
 });
 
 // Create new ESG report
-router.post('/esg', authenticateJWT, async (req, res) => {
+router.post('/esg', authenticateJWT, commonValidations.esgCreate, validate, async (req, res) => {
   try {
     const esgReport = new ESGReport(req.body);
     await esgReport.save();
@@ -110,7 +110,7 @@ router.post('/esg', authenticateJWT, async (req, res) => {
 });
 
 // Update ESG report
-router.put('/esg/:id', commonValidations.objectId, authenticateJWT, async (req, res) => {
+router.put('/esg/:id', commonValidations.objectId, authenticateJWT, commonValidations.esgUpdate, validate, async (req, res) => {
   try {
     const data = await ESGReport.findByIdAndUpdate(
       req.params.id,
