@@ -1832,3 +1832,107 @@
 {"ip":"::1","level":"info","message":"GET /health","timestamp":"2025-09-07 16:11:19:1119"}
 {"ip":"::1","level":"info","message":"GET /health","timestamp":"2025-09-07 16:11:49:1149"}
 {"ip":"::1","level":"info","message":"GET /health","timestamp":"2025-09-07 16:12:20:1220"}
+{"address":"172.18.0.4","code":"ECONNREFUSED","errno":-111,"level":"error","message":"Failed to connect to TimescaleDB: connect ECONNREFUSED 172.18.0.4:5432","port":5432,"stack":"Error: connect ECONNREFUSED 172.18.0.4:5432\n    at /app/node_modules/pg-pool/index.js:45:11\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async connectTimescaleDB (/app/src/config/database.js:52:20)\n    at async Promise.all (index 1)\n    at async connectDB (/app/src/config/database.js:108:3)\n    at async startServer (/app/src/server.js:285:5)","syscall":"connect","timestamp":"2025-09-24 13:39:32:3932"}
+{"level":"info","message":"✅ TimescaleDB connected successfully","timestamp":"2025-09-24 13:39:35:3935"}
+{"level":"info","message":"✅ MongoDB connected successfully","timestamp":"2025-09-24 13:39:37:3937"}
+{"level":"info","message":"✅ Redis connected successfully","timestamp":"2025-09-24 13:39:37:3937"}
+{"level":"info","message":"Redis ready to accept commands","timestamp":"2025-09-24 13:39:37:3937"}
+{"level":"info","message":"Redis ping successful","timestamp":"2025-09-24 13:39:37:3937"}
+{"level":"info","message":"🚀 EcoInsight Backend Server running on port 3001","timestamp":"2025-09-24 13:39:37:3937"}
+{"level":"info","message":"📊 Environment: development","timestamp":"2025-09-24 13:39:37:3937"}
+{"level":"info","message":"🔗 Health Check: http://localhost:3001/health","timestamp":"2025-09-24 13:39:37:3937"}
+{"level":"info","message":"📚 API Docs: http://localhost:3001/api/v1/docs","timestamp":"2025-09-24 13:39:37:3937"}
+{"ip":"::1","level":"info","message":"GET /health","timestamp":"2025-09-24 13:39:38:3938"}
+{"ip":"::ffff:192.168.65.1","level":"info","message":"GET /health","timestamp":"2025-09-24 13:39:42:3942","userAgent":"curl/8.7.1"}
+{"ip":"::1","level":"info","message":"GET /health","timestamp":"2025-09-24 13:40:09:409"}
+{"ip":"::ffff:192.168.65.1","level":"info","message":"POST /api/v1/auth/register","timestamp":"2025-09-24 13:40:15:4015"}
+{"ip":"::ffff:192.168.65.1","level":"info","message":"POST /api/v1/auth/register","timestamp":"2025-09-24 13:40:15:4015"}
+{"ip":"::ffff:192.168.65.1","level":"info","message":"POST /api/v1/auth/register","timestamp":"2025-09-24 13:40:16:4016"}
+{"ip":"::ffff:192.168.65.1","level":"info","message":"GET /health/mongodb","timestamp":"2025-09-24 13:40:16:4016"}
+{"ip":"::ffff:192.168.65.1","level":"info","message":"GET /api/v1/sustainability/esg","timestamp":"2025-09-24 13:40:16:4016"}
+{"ip":"::ffff:192.168.65.1","level":"info","message":"GET /health","timestamp":"2025-09-24 13:40:16:4016"}
+{"ip":"::ffff:192.168.65.1","level":"info","message":"GET /health/timescaledb","timestamp":"2025-09-24 13:40:16:4016"}
+{"ip":"::ffff:192.168.65.1","level":"info","message":"POST /api/v1/auth/register","timestamp":"2025-09-24 13:40:16:4016"}
+{"ip":"::ffff:192.168.65.1","level":"info","message":"POST /api/v1/auth/login","timestamp":"2025-09-24 13:40:16:4016"}
+{"ip":"::ffff:192.168.65.1","level":"info","message":"GET /api/v1","timestamp":"2025-09-24 13:40:16:4016"}
+{"ip":"::ffff:192.168.65.1","level":"info","message":"GET /health/redis","timestamp":"2025-09-24 13:40:16:4016"}
+{"ip":"::ffff:192.168.65.1","level":"info","message":"POST /api/v1/auth/login","timestamp":"2025-09-24 13:40:16:4016"}
+{"ip":"::ffff:192.168.65.1","level":"info","message":"POST /api/v1/auth/login","timestamp":"2025-09-24 13:40:16:4016"}
+{"ip":"::ffff:192.168.65.1","level":"info","message":"GET /api/v1/docs","timestamp":"2025-09-24 13:40:16:4016"}
+{"ip":"::ffff:192.168.65.1","level":"info","message":"POST /api/v1/auth/login","timestamp":"2025-09-24 13:40:17:4017"}
+{"ip":"::ffff:192.168.65.1","level":"info","message":"POST /api/v1/sustainability/esg","timestamp":"2025-09-24 13:40:17:4017"}
+{"ip":"::ffff:192.168.65.1","level":"info","message":"POST /api/v1/timeseries","timestamp":"2025-09-24 13:40:17:4017"}
+{"ip":"::ffff:192.168.65.1","level":"info","message":"POST /api/v1/auth/register","timestamp":"2025-09-24 13:40:17:4017"}
+{"ip":"::ffff:192.168.65.1","level":"info","message":"POST /api/v1/climate","timestamp":"2025-09-24 13:40:17:4017"}
+{"ip":"::ffff:192.168.65.1","level":"info","message":"POST /api/v1/timeseries","timestamp":"2025-09-24 13:40:17:4017"}
+{"buffer":{"data":[104,211,244,193,107,35,110,68,161,42,220,34],"type":"Buffer"},"level":"info","message":"New ESG report created:","timestamp":"2025-09-24 13:40:18:4018"}
+{"ip":"::ffff:192.168.65.1","level":"info","message":"POST /api/v1/climate","timestamp":"2025-09-24 13:40:18:4018"}
+{"buffer":{"data":[104,211,244,193,107,35,110,68,161,42,220,37],"type":"Buffer"},"level":"info","message":"New climate data created:","timestamp":"2025-09-24 13:40:18:4018"}
+{"ip":"::ffff:192.168.65.1","level":"info","message":"POST /api/v1/sustainability/esg","timestamp":"2025-09-24 13:40:18:4018"}
+{"ip":"::ffff:192.168.65.1","level":"info","message":"GET /api/v1/timeseries","timestamp":"2025-09-24 13:40:18:4018"}
+{"ip":"::ffff:192.168.65.1","level":"info","message":"GET /api/v1/sustainability/esg","timestamp":"2025-09-24 13:40:18:4018"}
+{"ip":"::ffff:192.168.65.1","level":"info","message":"GET /api/v1/climate","timestamp":"2025-09-24 13:40:18:4018"}
+{"ip":"::ffff:192.168.65.1","level":"info","message":"POST /api/v1/auth/login","timestamp":"2025-09-24 13:40:18:4018"}
+{"ip":"::ffff:192.168.65.1","level":"info","message":"GET /api/v1/climate/68d3f4c16b236e44a12adc25","timestamp":"2025-09-24 13:40:18:4018"}
+{"ip":"::ffff:192.168.65.1","level":"info","message":"POST /api/v1/climate","timestamp":"2025-09-24 13:40:18:4018"}
+{"ip":"::ffff:192.168.65.1","level":"info","message":"GET /api/v1/sustainability/esg/68d3f4c16b236e44a12adc22","timestamp":"2025-09-24 13:40:18:4018"}
+{"ip":"::ffff:192.168.65.1","level":"info","message":"POST /api/v1/climate","timestamp":"2025-09-24 13:40:19:4019"}
+{"ip":"::ffff:192.168.65.1","level":"info","message":"PUT /api/v1/climate/68d3f4c16b236e44a12adc25","timestamp":"2025-09-24 13:40:19:4019"}
+{"ip":"::ffff:192.168.65.1","level":"info","message":"PUT /api/v1/sustainability/esg/68d3f4c16b236e44a12adc22","timestamp":"2025-09-24 13:40:19:4019"}
+{"buffer":{"data":[104,211,244,195,107,35,110,68,161,42,220,48],"type":"Buffer"},"level":"info","message":"New climate data created:","timestamp":"2025-09-24 13:40:19:4019"}
+{"buffer":{"data":[104,211,244,193,107,35,110,68,161,42,220,37],"type":"Buffer"},"level":"info","message":"Climate data updated:","timestamp":"2025-09-24 13:40:19:4019"}
+{"buffer":{"data":[104,211,244,193,107,35,110,68,161,42,220,34],"type":"Buffer"},"level":"info","message":"ESG report updated:","timestamp":"2025-09-24 13:40:19:4019"}
+{"ip":"::ffff:192.168.65.1","level":"info","message":"DELETE /api/v1/climate/68d3f4c16b236e44a12adc25","timestamp":"2025-09-24 13:40:19:4019"}
+{"ip":"::ffff:192.168.65.1","level":"info","message":"DELETE /api/v1/sustainability/esg/68d3f4c16b236e44a12adc22","timestamp":"2025-09-24 13:40:19:4019"}
+{"level":"info","message":"Climate data deleted:","timestamp":"2025-09-24 13:40:19:4019"}
+{"level":"info","message":"ESG report deleted:","timestamp":"2025-09-24 13:40:19:4019"}
+{"ip":"::1","level":"info","message":"GET /health","timestamp":"2025-09-24 13:40:39:4039"}
+{"ip":"::1","level":"info","message":"GET /health","timestamp":"2025-09-24 13:41:09:419"}
+{"ip":"::1","level":"info","message":"GET /health","timestamp":"2025-09-24 13:41:40:4140"}
+{"ip":"::1","level":"info","message":"GET /health","timestamp":"2025-09-24 13:42:10:4210"}
+{"ip":"::1","level":"info","message":"GET /health","timestamp":"2025-09-24 13:42:40:4240"}
+{"ip":"::1","level":"info","message":"GET /health","timestamp":"2025-09-24 13:43:10:4310"}
+{"ip":"::1","level":"info","message":"GET /health","timestamp":"2025-09-24 13:43:40:4340"}
+{"ip":"::1","level":"info","message":"GET /health","timestamp":"2025-09-24 13:44:11:4411"}
+{"level":"warn","message":"MongoDB disconnected","timestamp":"2025-09-24 13:44:21:4421"}
+{"level":"info","message":"SIGTERM received, shutting down gracefully","timestamp":"2025-09-24 13:44:22:4422"}
+{"level":"info","message":"TimescaleDB connection closed","timestamp":"2025-09-24 13:44:22:4422"}
+{"level":"info","message":"✅ MongoDB connected successfully","timestamp":"2025-09-24 13:44:28:4428"}
+{"level":"info","message":"✅ TimescaleDB connected successfully","timestamp":"2025-09-24 13:44:28:4428"}
+{"level":"info","message":"✅ Redis connected successfully","timestamp":"2025-09-24 13:44:28:4428"}
+{"level":"info","message":"Redis ready to accept commands","timestamp":"2025-09-24 13:44:28:4428"}
+{"level":"info","message":"Redis ping successful","timestamp":"2025-09-24 13:44:28:4428"}
+{"level":"info","message":"🚀 EcoInsight Backend Server running on port 3001","timestamp":"2025-09-24 13:44:28:4428"}
+{"level":"info","message":"📊 Environment: development","timestamp":"2025-09-24 13:44:28:4428"}
+{"level":"info","message":"🔗 Health Check: http://localhost:3001/health","timestamp":"2025-09-24 13:44:28:4428"}
+{"level":"info","message":"📚 API Docs: http://localhost:3001/api/v1/docs","timestamp":"2025-09-24 13:44:28:4428"}
+{"ip":"::1","level":"info","message":"GET /health","timestamp":"2025-09-24 13:44:28:4428"}
+{"ip":"::1","level":"info","message":"GET /health","timestamp":"2025-09-24 13:44:59:4459"}
+{"ip":"::1","level":"info","message":"GET /health","timestamp":"2025-09-24 13:45:29:4529"}
+{"ip":"::1","level":"info","message":"GET /health","timestamp":"2025-09-24 13:45:59:4559"}
+{"ip":"::1","level":"info","message":"GET /health","timestamp":"2025-09-24 13:46:29:4629"}
+{"ip":"::1","level":"info","message":"GET /health","timestamp":"2025-09-24 13:46:59:4659"}
+{"ip":"::1","level":"info","message":"GET /health","timestamp":"2025-09-24 13:47:29:4729"}
+{"ip":"::1","level":"info","message":"GET /health","timestamp":"2025-09-24 13:48:00:480"}
+{"ip":"::1","level":"info","message":"GET /health","timestamp":"2025-09-24 13:48:30:4830"}
+{"ip":"::1","level":"info","message":"GET /health","timestamp":"2025-09-24 13:49:00:490"}
+{"ip":"::1","level":"info","message":"GET /health","timestamp":"2025-09-24 13:49:30:4930"}
+{"ip":"::1","level":"info","message":"GET /health","timestamp":"2025-09-24 13:50:00:500"}
+{"ip":"::1","level":"info","message":"GET /health","timestamp":"2025-09-24 13:50:31:5031"}
+{"ip":"::1","level":"info","message":"GET /health","timestamp":"2025-09-24 13:51:01:511"}
+{"ip":"::1","level":"info","message":"GET /health","timestamp":"2025-09-24 13:51:31:5131"}
+{"ip":"::1","level":"info","message":"GET /health","timestamp":"2025-09-24 13:52:01:521"}
+{"ip":"::1","level":"info","message":"GET /health","timestamp":"2025-09-24 13:52:31:5231"}
+{"ip":"::1","level":"info","message":"GET /health","timestamp":"2025-09-24 13:53:01:531"}
+{"ip":"::1","level":"info","message":"GET /health","timestamp":"2025-09-24 13:53:32:5332"}
+{"ip":"::1","level":"info","message":"GET /health","timestamp":"2025-09-24 13:54:02:542"}
+{"ip":"::1","level":"info","message":"GET /health","timestamp":"2025-09-24 13:54:32:5432"}
+{"ip":"::1","level":"info","message":"GET /health","timestamp":"2025-09-24 13:55:02:552"}
+{"ip":"::1","level":"info","message":"GET /health","timestamp":"2025-09-24 13:55:32:5532"}
+{"ip":"::1","level":"info","message":"GET /health","timestamp":"2025-09-24 13:56:03:563"}
+{"ip":"::1","level":"info","message":"GET /health","timestamp":"2025-09-24 13:56:33:5633"}
+{"ip":"::1","level":"info","message":"GET /health","timestamp":"2025-09-24 13:57:03:573"}
+{"ip":"::1","level":"info","message":"GET /health","timestamp":"2025-09-24 13:57:33:5733"}
+{"ip":"::1","level":"info","message":"GET /health","timestamp":"2025-09-24 13:58:03:583"}
+{"ip":"::1","level":"info","message":"GET /health","timestamp":"2025-09-24 13:58:34:5834"}
+{"ip":"::1","level":"info","message":"GET /health","timestamp":"2025-09-24 13:59:04:594"}

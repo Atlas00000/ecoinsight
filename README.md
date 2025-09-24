@@ -16,6 +16,12 @@
 
 > Backend-only repository. This project exposes the EcoInsight API with health checks, ESG data, climate endpoints, and time-series analytics — no frontend required.
 
+## 🔎 Current Status
+
+- Stable development state with full Dockerized stack and passing E2E tests
+- Centralized documentation in `docs/`
+- Production-minded defaults; review notes in Security & Hardening
+
 ## ✨ Features
 
 - Security-first: Helmet, CORS, JWT, rate limiting, validation
@@ -54,6 +60,22 @@ curl http://localhost:3001/health
 curl http://localhost:3001/api/v1
 ```
 
+## 🛠️ Local Development
+
+```bash
+cd backend
+npm install
+npm run dev
+
+# run tests (expects docker services running or local equivalents)
+npm test
+```
+
+Environment configuration samples:
+
+- `backend/.env.example` for local development
+- `backend/.env.production.example` for production deployments
+
 ## ⚙️ Configuration
 
 Set via environment variables (see `docker-compose.yml` for defaults):
@@ -79,12 +101,29 @@ Set via environment variables (see `docker-compose.yml` for defaults):
 
 Error responses conform to a consistent `ErrorResponse` shape.
 
+## 🧰 Tech Stack
+
+- Runtime: Node.js 18+, Express 4
+- Datastores: MongoDB 7 (ESG, users), TimescaleDB PG16 (time-series), Redis 7 (cache)
+- Auth & Security: JWT, Helmet CSP, CORS allowlist, rate limiting, input validation
+- Integrations: OpenWeather, OpenAQ (via axios)
+- Docs: Swagger (swagger-jsdoc + swagger-ui-express)
+- Logging: Winston (console + JSON file outputs)
+- Testing: Jest + Supertest (E2E)
+- Packaging/Ops: Dockerfile, docker-compose, healthcheck script
+
 ## 🔒 Security & Hardening
 
 - Helmet CSP with conservative defaults
 - JWT-based auth for mutations
 - Centralized input validation and error handling
 - Per-route rate limits on live upstream calls
+
+Additional recommendations:
+
+- In production, ensure `ALLOWED_ORIGINS` is explicitly set; prefer deny-by-default
+- Store secrets (`JWT_SECRET`, DB credentials) in a secret manager or environment, not VCS
+- Consider request ID correlation and metrics for deeper observability
 
 ## 📈 Performance
 
@@ -97,14 +136,13 @@ Error responses conform to a consistent `ErrorResponse` shape.
 - Structured logs (Winston) with rotating files
 - Detailed health payload (uptime, memory, pool sizes)
 
-## 🧪 Development
+## 🧪 Testing
+
+- E2E tests cover auth, climate and ESG CRUD, metrics, timeseries, and health
+- To run:
 
 ```bash
 cd backend
-npm install
-npm run dev
-
-# Tests
 npm test
 ```
 
@@ -135,3 +173,20 @@ ecoinsight/
 ---
 
 Made with care to keep things simple, secure, and scalable. 🌱
+
+## 📄 Docs
+
+- Architecture, plans, and UI notes now live in `docs/`:
+  - `docs/BE opt.md`
+  - `docs/CLIMATE_DASHBOARD_PROJECT_PLAN.md`
+  - `docs/FE homepage integration.md`
+  - `docs/UI Theme.md`
+
+## ✅ Feature Summary
+
+- Health checks with per-service diagnostics
+- JWT-based auth (register/login), protected mutations
+- Climate data and ESG CRUD with pagination, filters, validation, and caching
+- Live weather and air-quality integrations with rate limiting and caching
+- Timeseries insert and bucketed aggregate queries via TimescaleDB
+- Swagger UI docs and API discovery endpoints
